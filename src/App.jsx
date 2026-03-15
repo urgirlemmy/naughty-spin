@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router";
 import Game from "./pages/Game";
 import ProtectedRoute from "./providers/ProtectedRoute";
-import AdminView from "./pages/AdminView";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
         path="/admin"
         element={
           <ProtectedRoute>
-            <AdminView />
+            <Admin />
           </ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
