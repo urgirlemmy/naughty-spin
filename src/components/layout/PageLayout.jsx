@@ -83,6 +83,15 @@ export default function PageLayout({ children }) {
                       boxShadow: "0 0 24px rgba(157,78,221,0.25), 0 8px 32px rgba(0,0,0,0.5)",
                     }}
                   >
+                    <button
+                      onClick={() => { navigate("/profile"); setMenuOpen(false); }}
+                      className="w-full px-4 py-3 text-left text-sm flex justify-between items-center transition-all hover:bg-white/5"
+                      style={{ color: "var(--text-primary)", borderBottom: "1px solid rgba(157,78,221,0.15)" }}
+                    >
+                      <span>Profile</span>
+                      <span>👤</span>
+                    </button>
+
                     {/* Admin link — only visible to admins */}
                     {user?.isAdmin && (
                       <button

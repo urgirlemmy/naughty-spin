@@ -59,7 +59,7 @@ export const mockApi = {
         const { password: _, ...safeUser } = found;
         resolve({ ok: true, user: safeUser });
       }, randDelay());
-    }), 
+    }),
 
   logout: () =>
     new Promise((resolve) => {
@@ -169,6 +169,54 @@ export const mockApi = {
         if (!_users[targetUserId]) return reject(new Error("User not found"));
         _users[targetUserId].spins += amount;
         resolve({ ok: true, user: { ..._users[targetUserId] } });
+      }, randDelay());
+    }),
+
+  updateUsername: (userId, { newUsername, password }) =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        const user = _users[userId];
+        if (!user) return resolve({ ok: false, error: "User not found." });
+        if (user.password !== password) return resolve({ ok: false, error: "Incorrect password." });
+        const taken = Object.values(_users).find(u => u.username === newUsername && u.id !== userId);
+        if (taken) return resolve({ ok: false, error: "Username already taken." });
+        user.username = newUsername;
+        const { password: _, ...safeUser } = user;
+        resolve({ ok: true, user: safeUser });
+      }, randDelay());
+    }),
+
+  updatePassword: (userId, { currentPassword, newPassword }) =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        const user = _users[userId];
+        if (!user) return resolve({ ok: false, error: "User not found." });
+        if (user.password !== currentPassword) return resolve({ ok: false, error: "Incorrect password." });
+        user.password = newPassword;
+        resolve({ ok: true });
+      }, randDelay());
+    }),
+
+  updateEmail: (userId, { email, password }) =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        const user = _users[userId];
+        if (!user) return resolve({ ok: false, error: "User not found." });
+        if (user.password !== password) return resolve({ ok: false, error: "Incorrect password." });
+        user.email = email;
+        const { password: _, ...safeUser } = user;
+        resolve({ ok: true, user: safeUser });
+      }, randDelay());
+    }),
+
+  deleteAccount: (userId, { password }) =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        const user = _users[userId];
+        if (!user) return resolve({ ok: false, error: "User not found." });
+        if (user.password !== password) return resolve({ ok: false, error: "Incorrect password." });
+        delete _users[userId];
+        resolve({ ok: true });
       }, randDelay());
     }),
 
