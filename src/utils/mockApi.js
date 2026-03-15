@@ -9,9 +9,9 @@ let _users = {
   // userId: { id, username, spins, isAdmin }
   // example pre-seeded admin:
   1: { id: 1, username: "admin", spins: 10, isAdmin: true },
-  2: { id: 2, username: "user1", spins: 3 },
+  2: { id: 2, username: "user1", spins: 3, password: "password" },
 };
-let _nextUserId = 2;
+let _nextUserId = 3;
 
 let _prizes = [
   { id: "PRZ100", fullName: "₹100", rarity: "common" },
@@ -28,21 +28,38 @@ let _previousWins = [
 
 export const mockApi = {
   // Auth
-  login: ({ username = "", code = "" } = {}) =>
+  register: ({ username = "", password = "" } = {}) =>
     new Promise((resolve) => {
       setTimeout(() => {
-        // simple rule: find or create user by username
-        const existing = Object.values(_users).find((u) => u.username === username);
-        if (existing) {
-          resolve({ ok: true, user: { ...existing } });
+        const taken = Object.values(_users).find(u => u.username === username);
+        if (taken) {
+          resolve({ ok: false, error: "Username already taken." });
           return;
         }
         const id = _nextUserId++;
-        const newUser = { id, username, spins: 5, isAdmin: username === "admin" };
+        const newUser = { id, username, password, email: null, spins: 5, isAdmin: false };
         _users[id] = newUser;
-        resolve({ ok: true, user: { ...newUser } });
+        const { password: _, ...safeUser } = newUser;
+        resolve({ ok: true, user: safeUser });
       }, randDelay());
     }),
+
+  login: ({ username = "", password = "" } = {}) =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        const found = Object.values(_users).find(u => u.username === username);
+        if (!found) {
+          resolve({ ok: false, error: "User not found." });
+          return;
+        }
+        if (found.password !== password) {
+          resolve({ ok: false, error: "Incorrect password." });
+          return;
+        }
+        const { password: _, ...safeUser } = found;
+        resolve({ ok: true, user: safeUser });
+      }, randDelay());
+    }), 
 
   logout: () =>
     new Promise((resolve) => {

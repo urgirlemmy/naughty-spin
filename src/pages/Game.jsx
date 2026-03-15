@@ -1,11 +1,13 @@
 import PageLayout from "../components/layout/PageLayout";
-// import SlotMachine from "../components/SlotMachine";
-import SlotMachine from "../components/SlotMachine2";
+import SlotMachine from "../components/SlotMachine";
+import { SpinProvider } from "../context/SpinContext";
 
 export default function Game() {
   return (
-    <PageLayout>
-      <SlotMachine />
-    </PageLayout>
+    <SpinProvider>
+      <PageLayout>
+        <SlotMachine />
+      </PageLayout>
+    </SpinProvider>
   );
 }

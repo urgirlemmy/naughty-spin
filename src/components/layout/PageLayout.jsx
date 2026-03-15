@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../providers/AuthProvider";
+import { fadeIn, slideDown } from "../../utils/animations";
 import LoginModal from "../LoginModal";
 
 export default function PageLayout({ children }) {
@@ -9,55 +10,88 @@ export default function PageLayout({ children }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // click outside to close
   useEffect(() => {
     function handleClickOutside(e) {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuOpen(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
     }
     if (menuOpen) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuOpen]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-700 to-pink-600 flex flex-col text-white">
+    <div className="relative min-h-screen flex flex-col" style={{ background: "var(--bg-base)" }}>
 
-      {/* NAVBAR */}
-      <nav className="w-full backdrop-blur-sm bg-white/10 border-b border-white/20 flex items-center justify-between px-6 py-4">
-
-        {/* LEFT — App brand */}
-        <div className="flex items-center gap-3 font-extrabold text-2xl">
-          <span className="text-3xl">🎡</span>
-          <span className="tracking-wide">Naughty Spin</span>
+      {/* NAVBAR — fixed */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4"
+        style={{
+          background: "rgba(8,8,16,0.85)",
+          backdropFilter: "blur(16px)",
+          borderBottom: "1px solid var(--border-dim)",
+          boxShadow: "0 1px 0 rgba(157,78,221,0.15), 0 4px 24px rgba(0,0,0,0.4)",
+        }}
+      >
+        {/* Brand */}
+        <div className="flex items-center gap-3">
+          <span className="text-3xl" style={{ filter: "drop-shadow(0 0 8px rgba(157,78,221,0.8))" }}>🎡</span>
+          <span
+            className="font-display tracking-widest text-3xl"
+            style={{
+              background: "linear-gradient(90deg, #9D4EDD, #00F5FF)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            NAUGHTY SPIN
+          </span>
         </div>
 
-        {/* RIGHT — Login Section */}
+        {/* Auth */}
         <div className="relative" ref={menuRef}>
           {isLoggedIn ? (
             <div className="relative">
               <button
-                onClick={() => setMenuOpen((s) => !s)}
-                className="flex items-center gap-2 px-4 py-2 bg-white/90 text-indigo-700 font-semibold rounded-xl hover:bg-pink-100 transition"
+                onClick={() => setMenuOpen(s => !s)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm transition-all"
+                style={{
+                  background: "rgba(157,78,221,0.15)",
+                  border: "1px solid var(--border-neon)",
+                  color: "var(--text-primary)",
+                  boxShadow: menuOpen ? "0 0 14px rgba(157,78,221,0.4)" : "none",
+                }}
               >
-                👋 Hi, {user.username} ({user.spins})
+                <span style={{ color: "var(--neon-cyan)" }}>●</span>
+                {user.username}
+                <span style={{ color: "var(--neon-gold)", fontSize: "0.75rem" }}>
+                  {user.spins} spins
+                </span>
               </button>
 
               <AnimatePresence>
                 {menuOpen && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: -4 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: -4 }}
-                    transition={{ type: "spring", stiffness: 220, damping: 18 }}
-                    className="absolute right-0 mt-2 w-40 bg-white text-gray-700 rounded-xl shadow-xl border border-gray-200 overflow-hidden"
+                   variants={slideDown}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    // initial={{ opacity: 0, scale: 0.92, y: -6 }}
+                    // animate={{ opacity: 1, scale: 1, y: 0 }}
+                    // exit={{ opacity: 0, scale: 0.92, y: -6 }}
+                    // transition={{ type: "spring", stiffness: 240, damping: 20 }}
+                    className="absolute right-0 mt-2 w-44 rounded-xl overflow-hidden"
+                    style={{
+                      background: "var(--bg-card)",
+                      border: "1px solid var(--border-neon)",
+                      boxShadow: "0 0 24px rgba(157,78,221,0.25), 0 8px 32px rgba(0,0,0,0.5)",
+                    }}
                   >
                     <button
-                      onClick={() => logout()}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-100 flex justify-between"
+                      onClick={logout}
+                      className="w-full px-4 py-3 text-left text-sm flex justify-between items-center transition-all hover:bg-white/5"
+                      style={{ color: "#ff6b6b" }}
                     >
-                      <div className="text-red-500">Logout</div>
-                      <div>🚪</div>
+                      <span>Logout</span>
+                      <span>🚪</span>
                     </button>
                   </motion.div>
                 )}
@@ -66,7 +100,13 @@ export default function PageLayout({ children }) {
           ) : (
             <button
               onClick={() => setShowLoginModal(true)}
-              className="bg-white text-indigo-700 font-semibold px-4 py-2 rounded-xl hover:bg-pink-100 transition"
+              className="px-5 py-2 rounded-xl font-semibold text-sm transition-all hover:scale-105 active:scale-95"
+              style={{
+                background: "linear-gradient(135deg, #9D4EDD, #00F5FF22)",
+                border: "1px solid var(--border-neon)",
+                color: "var(--text-primary)",
+                boxShadow: "0 0 14px rgba(157,78,221,0.3)",
+              }}
             >
               Login
             </button>
@@ -74,16 +114,13 @@ export default function PageLayout({ children }) {
         </div>
       </nav>
 
-      {/* CONTENT */}
-      <div className="flex-1 flex flex-col items-center p-6">
+      {/* CONTENT — padded below fixed navbar */}
+      <div className="relative z-10 flex-1 flex flex-col items-center px-4 pb-10" style={{ paddingTop: "88px" }}>
         {children}
       </div>
 
-      {/* MOTION MODAL */}
       <AnimatePresence>
-        {showLoginModal && (
-          <LoginModal onFinish={() => setShowLoginModal(false)} />
-        )}
+        {showLoginModal && <LoginModal onFinish={() => setShowLoginModal(false)} />}
       </AnimatePresence>
     </div>
   );
