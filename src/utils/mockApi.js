@@ -8,7 +8,7 @@ const randDelay = (min = 80, max = 320) =>
 let _users = {
   // userId: { id, username, spins, isAdmin }
   // example pre-seeded admin:
-  1: { id: 1, username: "admin", spins: 10, isAdmin: true },
+  1: { id: 1, username: "admin", spins: 10, password: "password", isAdmin: true },
   2: { id: 2, username: "user1", spins: 3, password: "password" },
 };
 let _nextUserId = 3;

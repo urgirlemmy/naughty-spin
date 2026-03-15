@@ -3,11 +3,13 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../providers/AuthProvider";
 import { fadeIn, slideDown } from "../../utils/animations";
 import LoginModal from "../LoginModal";
+import { useNavigate } from "react-router";
 
 export default function PageLayout({ children }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { isLoggedIn, user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -70,14 +72,10 @@ export default function PageLayout({ children }) {
               <AnimatePresence>
                 {menuOpen && (
                   <motion.div
-                   variants={slideDown}
+                    variants={slideDown}
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    // initial={{ opacity: 0, scale: 0.92, y: -6 }}
-                    // animate={{ opacity: 1, scale: 1, y: 0 }}
-                    // exit={{ opacity: 0, scale: 0.92, y: -6 }}
-                    // transition={{ type: "spring", stiffness: 240, damping: 20 }}
                     className="absolute right-0 mt-2 w-44 rounded-xl overflow-hidden"
                     style={{
                       background: "var(--bg-card)",
@@ -85,6 +83,18 @@ export default function PageLayout({ children }) {
                       boxShadow: "0 0 24px rgba(157,78,221,0.25), 0 8px 32px rgba(0,0,0,0.5)",
                     }}
                   >
+                    {/* Admin link — only visible to admins */}
+                    {user?.isAdmin && (
+                      <button
+                        onClick={() => { navigate("/admin"); setMenuOpen(false); }}
+                        className="w-full px-4 py-3 text-left text-sm flex justify-between items-center transition-all hover:bg-white/5"
+                        style={{ color: "var(--neon-cyan)", borderBottom: "1px solid rgba(157,78,221,0.15)" }}
+                      >
+                        <span>Admin Panel</span>
+                        <span>⚙️</span>
+                      </button>
+                    )}
+
                     <button
                       onClick={logout}
                       className="w-full px-4 py-3 text-left text-sm flex justify-between items-center transition-all hover:bg-white/5"
