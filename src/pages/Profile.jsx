@@ -164,14 +164,14 @@ function UpdatePassword() {
         });
         setLoading(false);
         setPending(null);
-        // reset();
+        reset();
         if (res.ok) setStatus({ type: "success", message: "Password updated successfully." });
         else setStatus({ type: "error", message: res.error });
     };
 
     const onDismiss = () => {
         setPending(null);
-        // reset();
+        reset();
         setStatus(null);
     };
 
