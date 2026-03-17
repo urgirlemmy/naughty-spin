@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthProvider";
@@ -434,9 +434,9 @@ export default function Profile() {
                         whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                         className="px-4 py-2 rounded-xl text-sm font-semibold"
                         style={{
-                            background: "rgba(157,78,221,0.08)",
-                            border: "1px solid rgba(157,78,221,0.3)",
-                            color: "var(--neon-violet)",
+                            background: "rgba(0,245,255,0.08)",
+                            border: "1px solid rgba(0,245,255,0.3)",
+                            color: "var(--neon-cyan)",
                         }}
                     >
                         ← Back

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { staggerContainer, staggerItem } from "../utils/animations";
 
 export default function RewardList({ prizes, compact = false }) {

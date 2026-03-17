@@ -1,22 +1,13 @@
-import { createContext, useContext, useState, useRef, useCallback } from "react";
+import { createContext, useContext, useState, useRef, useCallback, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { useAuth } from "../providers/AuthProvider";
-import { mockApi } from "../utils/mockApi";
+import { prizesApi, spinsApi } from "../utils/api";
 
 const SpinContext = createContext(null);
 
-const EMOJI_MAP = {
-  PRZ100:   "💰",
-  COFFEE1:  "☕",
-  XPBOOST:  "⚡",
-  TRYAGAIN: "🔄",
-  PRZ005:   "🪙",
-  JACKPOT:  "🎰",
-};
-
-const NUM_REELS        = 3;
+const NUM_REELS = 3;
 const SYMBOLS_PER_REEL = 24;
-const STOP_DELAYS      = [1400, 2300, 3200];
+const STOP_DELAYS = [1400, 2300, 3200];
 
 export function buildStrip(prizes, anchorPrize = null) {
   const strip = Array.from({ length: SYMBOLS_PER_REEL }, () =>
@@ -29,34 +20,43 @@ export function buildStrip(prizes, anchorPrize = null) {
 export function SpinProvider({ children }) {
   const { user, setUser } = useAuth();
 
-  const [prizes, setPrizes]                     = useState([]);
-  const [loadingPrizes, setLoadingPrizes]       = useState(true);
-  const [spinning, setSpinning]                 = useState(false);
-  const [strips, setStrips]                     = useState([]);
-  const [stopped, setStopped]                   = useState(Array(NUM_REELS).fill(true));
-  const [paylineActive, setPaylineActive]       = useState(false);
-  const [prize, setPrize]                       = useState(null);
-  const [showResult, setShowResult]             = useState(false);
-  const [previousWins, setPreviousWins]         = useState([]);
-  const [error, setError]                       = useState(null);
+  const [prizes, setPrizes] = useState([]);
+  const [loadingPrizes, setLoadingPrizes] = useState(true);
+  const [spinning, setSpinning] = useState(false);
+  const [strips, setStrips] = useState([]);
+  const [stopped, setStopped] = useState(Array(NUM_REELS).fill(true));
+  const [paylineActive, setPaylineActive] = useState(false);
+  const [prize, setPrize] = useState(null);
+  const [showResult, setShowResult] = useState(false);
+  const [previousWins, setPreviousWins] = useState([]);
+  const [error, setError] = useState(null);
 
   const timeoutsRef = useRef([]);
   const clearTimeouts = useCallback(() => {
     timeoutsRef.current.forEach(clearTimeout);
     timeoutsRef.current = [];
   }, []);
+  useEffect(() => () => clearTimeouts(), [clearTimeouts]);
 
   const loadPrizes = useCallback(async () => {
-    try {
-      const data = await mockApi.fetchPrizes();
-      const enriched = data.map(p => ({ ...p, emoji: EMOJI_MAP[p.id] ?? "🎁" }));
-      setPrizes(enriched);
-      setStrips(Array.from({ length: NUM_REELS }, () => buildStrip(enriched)));
-    } catch (e) {
-      setError("Failed to load prizes.");
-    } finally {
-      setLoadingPrizes(false);
+    setLoadingPrizes(true);
+    const res = await prizesApi.list();
+    if (res.ok) {
+      // Backend returns snake_case — normalise for frontend use
+      const normalised = res.data.prizes.map(p => ({
+        id: p.id,
+        code: p.code,
+        fullName: p.full_name,
+        emoji: p.emoji,
+        rarity: p.rarity,
+        weight: p.weight,
+      }));
+      setPrizes(normalised);
+      setStrips(Array.from({ length: NUM_REELS }, () => buildStrip(normalised)));
+    } else {
+      setError('Failed to load prizes.');
     }
+    setLoadingPrizes(false);
   }, []);
 
   const shootConfetti = useCallback((isJackpot) => {
@@ -82,24 +82,38 @@ export function SpinProvider({ children }) {
     setStopped(Array(NUM_REELS).fill(false));
     setStrips(Array.from({ length: NUM_REELS }, () => buildStrip(prizes)));
 
-    let res;
-    try {
-      res = await mockApi.performSpin(user.id);
-    } catch (e) {
-      setError(e.message);
+    const res = await spinsApi.perform();
+
+    if (!res.ok) {
+      setError(res.error);
       setSpinning(false);
       setStopped(Array(NUM_REELS).fill(true));
       return;
     }
 
-    const winningPrize = prizes.find(p => p.id === res.prize.id) ?? prizes[0];
-    setUser({ spins: res.spinsLeft });
+    // Backend returns { spin_id, prize: { id, code, full_name, emoji, rarity }, spins_left }
+    const rawPrize = res.data.prize;
+    const spinsLeft = res.data.spins_left;
+
+    // Normalise to frontend shape
+    const winningPrize = {
+      id: rawPrize.id,
+      code: rawPrize.code,
+      fullName: rawPrize.full_name,
+      emoji: rawPrize.emoji,
+      rarity: rawPrize.rarity,
+    };
+
+    // Match against loaded prizes list (same code)
+    const matchedPrize = prizes.find(p => p.code === winningPrize.code) ?? winningPrize;
+
+    setUser({ spins: spinsLeft });
 
     STOP_DELAYS.forEach((delay, i) => {
       const t = setTimeout(() => {
         setStrips(prev => {
           const next = [...prev];
-          next[i] = buildStrip(prizes, winningPrize);
+          next[i] = buildStrip(prizes, matchedPrize);
           return next;
         });
         setStopped(prev => {
@@ -108,12 +122,12 @@ export function SpinProvider({ children }) {
 
         if (i === NUM_REELS - 1) {
           setTimeout(() => setPaylineActive(true), 100);
-          setPrize(winningPrize);
+          setPrize(matchedPrize);
           setPreviousWins(pw => [
-            { time: new Date().toLocaleTimeString(), ...winningPrize },
+            { time: new Date().toLocaleTimeString(), ...matchedPrize },
             ...pw,
           ]);
-          shootConfetti(winningPrize.id === "JACKPOT");
+          shootConfetti(matchedPrize.code === 'JACKPOT');
           setTimeout(() => { setShowResult(true); setSpinning(false); }, 900);
         }
       }, delay);
@@ -123,25 +137,11 @@ export function SpinProvider({ children }) {
 
   return (
     <SpinContext.Provider value={{
-      // Prize data
-      prizes,
-      loadingPrizes,
-      loadPrizes,
-      // Reel state
-      strips,
-      stopped,
-      paylineActive,
-      NUM_REELS,
-      SYMBOLS_PER_REEL,
-      // Spin state
-      spinning,
-      spin,
-      error,
-      // Result
-      prize,
-      showResult,
-      setShowResult,
-      // History
+      prizes, loadingPrizes, loadPrizes,
+      strips, stopped, paylineActive,
+      NUM_REELS, SYMBOLS_PER_REEL,
+      spinning, spin, error,
+      prize, showResult, setShowResult,
       previousWins,
     }}>
       {children}

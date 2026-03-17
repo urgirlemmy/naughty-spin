@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Game from "./pages/Game";
 import ProtectedRoute from "./providers/ProtectedRoute";
 import Admin from "./pages/Admin";
@@ -11,17 +11,20 @@ function App() {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute adminOnly>
             <Admin />
-          </ProtectedRoute>} />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/profile"
         element={
           <ProtectedRoute>
             <Profile />
-          </ProtectedRoute>} />
-
-        <Route path="*" element={<Navigate to="/" replace />} />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

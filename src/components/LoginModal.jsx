@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../providers/AuthProvider";
 import { fadeIn, scaleUp } from "../utils/animations";

@@ -1,14 +1,15 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../providers/AuthProvider";
 import { fadeIn, slideDown } from "../../utils/animations";
 import LoginModal from "../LoginModal";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function PageLayout({ children }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { isLoggedIn, user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
   const menuRef = useRef(null);
 
@@ -83,6 +84,18 @@ export default function PageLayout({ children }) {
                       boxShadow: "0 0 24px rgba(157,78,221,0.25), 0 8px 32px rgba(0,0,0,0.5)",
                     }}
                   >
+                    {/* Back to Game — only shown on non-game pages */}
+                    {isLoggedIn && location.pathname !== "/" && (
+                      <button
+                        onClick={() => { navigate("/"); setMenuOpen(false); }}
+                        className="w-full px-4 py-3 text-left text-sm flex justify-between items-center transition-all hover:bg-white/5"
+                        style={{ color: "var(--neon-cyan)", borderBottom: "1px solid rgba(157,78,221,0.15)" }}
+                      >
+                        <span>Back to Game</span>
+                        <span>🎰</span>
+                      </button>
+                    )}
+
                     <button
                       onClick={() => { navigate("/profile"); setMenuOpen(false); }}
                       className="w-full px-4 py-3 text-left text-sm flex justify-between items-center transition-all hover:bg-white/5"

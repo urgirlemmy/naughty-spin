@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useForm } from "react-hook-form";
 import { fadeIn, scaleUp } from "../utils/animations";
 

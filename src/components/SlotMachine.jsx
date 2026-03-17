@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "../providers/AuthProvider";
 import { useSpin } from "../context/SpinContext";
 import { slideInRight, slideInLeft, paylineSweep, reelEntry } from "../utils/animations";
@@ -174,33 +174,52 @@ export default function SlotMachine() {
                 {error && <p className="text-red-400 text-sm text-center mt-3">{error}</p>}
             </motion.div>
 
-            {/* Panel buttons */}
-            <div className="flex items-center gap-3">
-                {isLoggedIn && (
-                    <button
-                        onClick={() => setShowPreviousWins(!showPreviousWins)}
-                        className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
-                        style={{
-                            background: "rgba(0,245,255,0.08)",
-                            border: "1px solid rgba(0,245,255,0.25)",
-                            color: "var(--neon-cyan)",
-                        }}
-                    >
-                        🎖️ Your Wins
-                    </button>
-                )}
-                <button
-                    onClick={() => setShowLegend(!showLegend)}
-                    className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
+            {/* Legend button — fixed bottom right */}
+            <motion.button
+                onClick={() => setShowLegend(!showLegend)}
+                whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}
+                className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full text-sm font-semibold"
+                style={{
+                    background: "rgba(13,13,26,0.95)",
+                    border: "1px solid rgba(157,78,221,0.5)",
+                    color: "var(--neon-violet)",
+                    boxShadow: showLegend
+                        ? "0 0 24px rgba(157,78,221,0.6), 0 4px 20px rgba(0,0,0,0.5)"
+                        : "0 0 14px rgba(157,78,221,0.3), 0 4px 20px rgba(0,0,0,0.5)",
+                    backdropFilter: "blur(12px)",
+                }}
+            >
+                <span>⛳</span>
+                <span className="font-display tracking-widest text-xs">LEGEND</span>
+            </motion.button>
+
+            {/* Previous Wins button — fixed bottom left, only when logged in */}
+            {isLoggedIn && (
+                <motion.button
+                    onClick={() => setShowPreviousWins(!showPreviousWins)}
+                    whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}
+                    className="fixed bottom-6 left-6 z-40 flex items-center gap-2 px-3 py-3 rounded-full text-sm font-semibold"
                     style={{
-                        background: "rgba(157,78,221,0.08)",
-                        border: "1px solid rgba(157,78,221,0.3)",
-                        color: "var(--neon-violet)",
+                        background: "rgba(13,13,26,0.95)",
+                        border: "1px solid rgba(0,245,255,0.4)",
+                        color: "var(--neon-cyan)",
+                        boxShadow: showPreviousWins
+                            ? "0 0 24px rgba(0,245,255,0.5), 0 4px 20px rgba(0,0,0,0.5)"
+                            : "0 0 14px rgba(0,245,255,0.2), 0 4px 20px rgba(0,0,0,0.5)",
+                        backdropFilter: "blur(12px)",
                     }}
                 >
-                    ⛳ Legend
-                </button>
-            </div>
+                    <span>🎖️</span>
+                    <div className="flex flex-col items-start leading-tight">
+                        <span className="font-display tracking-widest text-xs">WINS</span>
+                        {previousWins.length > 0 && (
+                            <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
+                                {previousWins.length} total
+                            </span>
+                        )}
+                    </div>
+                </motion.button>
+            )}
 
             {/* Login modal */}
             <AnimatePresence>

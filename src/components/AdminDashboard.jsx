@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { staggerContainer, staggerItem } from "../utils/animations";
 
 function StatCard({ emoji, label, value, color }) {
@@ -27,7 +27,7 @@ export default function AdminDashboard({ users, prizes }) {
   const totalUsers   = users.length;
   const totalSpins   = users.reduce((sum, u) => sum + u.spins, 0);
   const totalPrizes  = prizes.length;
-  const adminCount   = users.filter(u => u.isAdmin).length;
+  const adminCount   = users.filter(u => u.is_admin).length;
   const legendary    = prizes.filter(p => p.rarity === "legendary").length;
   const uncommon     = prizes.filter(p => p.rarity === "uncommon").length;
 
