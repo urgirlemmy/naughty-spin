@@ -16,13 +16,12 @@ export default function RewardTable({ prizes, onPrizesChange }) {
   const [loading, setLoading]         = useState(false);
   const [deletingId, setDeletingId]   = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [error, setError]             = useState(null);
+  const { addToast } = useToast();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
   const handleAdd = async (data) => {
     setLoading(true);
-    setError(null);
     const res = await prizesApi.create({
       code:      data.code.toUpperCase().replace(/\s+/g, ''),
       full_name: data.full_name,
@@ -33,21 +32,22 @@ export default function RewardTable({ prizes, onPrizesChange }) {
     if (res.ok) {
       reset();
       setShowAddForm(false);
+      addToast('Prize added successfully.', 'success');
       onPrizesChange();
     } else {
-      setError(res.error);
+      addToast(res.error, 'error');
     }
     setLoading(false);
   };
 
   const handleRemove = async (id) => {
     setDeletingId(id);
-    setError(null);
     const res = await prizesApi.remove(id);
     if (res.ok) {
+      addToast('Prize removed.', 'success');
       onPrizesChange();
     } else {
-      setError(res.error);
+      addToast(res.error, 'error');
     }
     setDeletingId(null);
   };
@@ -190,7 +190,6 @@ export default function RewardTable({ prizes, onPrizesChange }) {
                 </motion.button>
               </div>
             </form>
-            {error && <p className="text-xs mt-2" style={{ color: "#ff6b6b" }}>{error}</p>}
           </motion.div>
         )}
       </AnimatePresence>

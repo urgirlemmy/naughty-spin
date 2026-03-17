@@ -2,26 +2,27 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { staggerContainer, staggerItem } from "../utils/animations";
 import { adminApi } from "../utils/api";
+import { useToast } from "../context/ToastContext";
 
 export default function UserTable({ users, onUsersChange }) {
   const [givingSpins, setGivingSpins] = useState({});
   const [loadingId, setLoadingId]     = useState(null);
-  const [error, setError]             = useState(null);
+  const { addToast } = useToast();
   const [successId, setSuccessId]     = useState(null);
 
   const handleGiveSpins = async (userId) => {
     const amount = parseInt(givingSpins[userId]);
     if (!amount || amount < 1) return;
     setLoadingId(userId);
-    setError(null);
     const res = await adminApi.giveSpins(userId, amount);
     if (res.ok) {
       setSuccessId(userId);
       setGivingSpins(prev => ({ ...prev, [userId]: "" }));
       setTimeout(() => setSuccessId(null), 1500);
+      addToast(`Gave ${amount} spin${amount > 1 ? 's' : ''}}!`, 'success');
       onUsersChange();
     } else {
-      setError(res.error);
+      addToast(res.error, 'error');
     }
     setLoadingId(null);
   };
@@ -120,17 +121,6 @@ export default function UserTable({ users, onUsersChange }) {
           </motion.div>
         ))}
       </motion.div>
-
-      <AnimatePresence>
-        {error && (
-          <motion.p
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="text-xs text-center py-2" style={{ color: "#ff6b6b" }}
-          >
-            {error}
-          </motion.p>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

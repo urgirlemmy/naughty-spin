@@ -8,6 +8,7 @@ import AdminDashboard from "../components/AdminDashboard";
 import UserTable from "../components/UserTable";
 import RewardList from "../components/RewardList";
 import RewardTable from "../components/RewardTable";
+import { useToast } from "../context/ToastContext";
 
 const TABS = ["Overview", "Users", "Prizes"];
 
@@ -17,19 +18,18 @@ export default function Admin() {
   const [users, setUsers]     = useState([]);
   const [prizes, setPrizes]   = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+  const { addToast } = useToast();
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    setError(null);
     const [usersRes, prizesRes] = await Promise.all([
       adminApi.users(),
       prizesApi.listAll(),
     ]);
     if (usersRes.ok)  setUsers(usersRes.data.users);
-    else              setError('Failed to load users.');
+    else              addToast('Failed to load users.', 'error');
     if (prizesRes.ok) setPrizes(prizesRes.data.prizes);
-    else              setError(e => e ?? 'Failed to load prizes.');
+    else              addToast('Failed to load prizes.', 'error');
     setLoading(false);
   }, []);
 
@@ -102,8 +102,6 @@ export default function Admin() {
             </motion.button>
           ))}
         </div>
-
-        {error && <p className="text-sm text-center" style={{ color: "#ff6b6b" }}>{error}</p>}
 
         {loading ? (
           <div className="flex justify-center py-20">

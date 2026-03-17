@@ -106,7 +106,7 @@ export default function PageLayout({ children }) {
                     </button>
 
                     {/* Admin link — only visible to admins */}
-                    {user?.isAdmin && (
+                    {user?.is_admin && (
                       <button
                         onClick={() => { navigate("/admin"); setMenuOpen(false); }}
                         className="w-full px-4 py-3 text-left text-sm flex justify-between items-center transition-all hover:bg-white/5"

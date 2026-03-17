@@ -15,7 +15,7 @@ export default function SlotMachine() {
     const {
         prizes, loadingPrizes, loadPrizes,
         strips, stopped, paylineActive,
-        spinning, spin, error,
+        spinning, spin,
         prize, showResult, setShowResult,
         previousWins,
     } = useSpin();
@@ -170,8 +170,6 @@ export default function SlotMachine() {
                         LOGIN TO PLAY
                     </motion.button>
                 )}
-
-                {error && <p className="text-red-400 text-sm text-center mt-3">{error}</p>}
             </motion.div>
 
             {/* Legend button — fixed bottom right */}
@@ -342,7 +340,7 @@ function Reel({ strip, spinning, symbolHeight, isWinner, reelIndex }) {
                             </span>
                             <span className="text-[9px] font-semibold mt-1 tracking-widest"
                                 style={{ color: isMiddleRow && isWinner ? "var(--neon-gold)" : "var(--text-muted)" }}>
-                                {prize.id}
+                                {prize.code}
                             </span>
                         </div>
                     );

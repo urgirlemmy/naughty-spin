@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useRef, useCallback, useEffect } f
 import confetti from "canvas-confetti";
 import { useAuth } from "../providers/AuthProvider";
 import { prizesApi, spinsApi } from "../utils/api";
+import { useToast } from "./ToastContext";
 
 const SpinContext = createContext(null);
 
@@ -29,7 +30,7 @@ export function SpinProvider({ children }) {
   const [prize, setPrize] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [previousWins, setPreviousWins] = useState([]);
-  const [error, setError] = useState(null);
+  const { addToast } = useToast();
 
   const timeoutsRef = useRef([]);
   const clearTimeouts = useCallback(() => {
@@ -54,7 +55,7 @@ export function SpinProvider({ children }) {
       setPrizes(normalised);
       setStrips(Array.from({ length: NUM_REELS }, () => buildStrip(normalised)));
     } else {
-      setError('Failed to load prizes.');
+      addToast('Failed to load prizes.', 'error');
     }
     setLoadingPrizes(false);
   }, []);
@@ -78,14 +79,13 @@ export function SpinProvider({ children }) {
     setShowResult(false);
     setPaylineActive(false);
     setPrize(null);
-    setError(null);
     setStopped(Array(NUM_REELS).fill(false));
     setStrips(Array.from({ length: NUM_REELS }, () => buildStrip(prizes)));
 
     const res = await spinsApi.perform();
 
     if (!res.ok) {
-      setError(res.error);
+      addToast(res.error, 'error');
       setSpinning(false);
       setStopped(Array(NUM_REELS).fill(true));
       return;
@@ -140,7 +140,7 @@ export function SpinProvider({ children }) {
       prizes, loadingPrizes, loadPrizes,
       strips, stopped, paylineActive,
       NUM_REELS, SYMBOLS_PER_REEL,
-      spinning, spin, error,
+      spinning, spin,
       prize, showResult, setShowResult,
       previousWins,
     }}>
