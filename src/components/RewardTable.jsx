@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useForm } from "react-hook-form";
 import { staggerContainer, staggerItem, scaleUp } from "../utils/animations";
 import { prizesApi } from "../utils/api";
+import { useToast } from "../context/ToastContext";
 
 const RARITY_OPTIONS = ["common", "uncommon", "legendary"];
 

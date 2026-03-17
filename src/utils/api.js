@@ -17,37 +17,44 @@ export const tokenStore = {
 
 // ── Core fetch wrapper ────────────────────────────────────────────────────────
 async function request(method, path, body = null, auth = true) {
-    const headers = { 'Content-Type': 'application/json' };
+  const headers = { 'Content-Type': 'application/json' };
 
-    if (auth) {
-        const token = tokenStore.get();
-        if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (auth) {
+    const token = tokenStore.get();
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const options = { method, headers };
+  if (body) options.body = JSON.stringify(body);
+
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, options);
+    const json = await res.json().catch(() => ({}));
+
+    // Auto-logout on expired/invalid token
+    if (res.status === 401) {
+      tokenStore.clear();
+      window.location.href = '/';
+      return { ok: false, error: 'Session expired. Please log in again.', status: 401 };
     }
 
-    const options = { method, headers };
-    if (body) options.body = JSON.stringify(body);
-
-    try {
-        const res = await fetch(`${BASE_URL}${path}`, options);
-        const json = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-            return {
-                ok: false,
-                error: json.error ?? json.message ?? `Request failed (${res.status})`,
-                details: json.details ?? null,
-                status: res.status,
-            };
-        }
-
-        return { ok: true, data: json };
-    } catch (err) {
-        return {
-            ok: false,
-            error: 'Network error — is the API server running?',
-            status: 0,
-        };
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: json.error ?? json.message ?? `Request failed (${res.status})`,
+        details: json.details ?? null,
+        status: res.status,
+      };
     }
+
+    return { ok: true, data: json };
+  } catch (err) {
+    return {
+      ok: false,
+      error: 'Network error — is the API server running?',
+      status: 0,
+    };
+  }
 }
 
 // ── Convenience methods ───────────────────────────────────────────────────────
@@ -104,5 +111,4 @@ export const adminApi = {
     log: (limit = 20, offset = 0) =>
         get(`/admin/log?limit=${limit}&offset=${offset}`),
     stats: () => get('/admin/stats'),
-    reset: () => post('/admin/reset'),
 };
