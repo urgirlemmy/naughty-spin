@@ -85,7 +85,7 @@ export default function PageLayout({ children }) {
                     }}
                   >
                     {/* Back to Game — only shown on non-game pages */}
-                    {isLoggedIn && location.pathname !== "/" && (
+                    {isLoggedIn && !user.is_admin && location.pathname !== "/" && (
                       <button
                         onClick={() => { navigate("/"); setMenuOpen(false); }}
                         className="w-full px-4 py-3 text-left text-sm flex justify-between items-center transition-all hover:bg-white/5"

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, addAttrValue } from "motion/react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthProvider";
 import { pageEnter, scaleUp } from "../utils/animations";
 import PageLayout from "../components/layout/PageLayout";
 import PasswordConfirmModal from "../components/PasswordConfirmModal";
+import { useToast } from "../context/ToastContext";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 const inputStyle = (hasError) => ({
@@ -75,14 +76,13 @@ function SubmitButton({ label, isSubmitting, color }) {
 function UpdateUsername() {
     const { updateUsername, user } = useAuth();
     const [pending, setPending] = useState(null);
-    const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(false);
+    const { addToast } = useToast();
     const { register, handleSubmit, reset, formState: { errors } } = useForm({
         defaultValues: { newUsername: user?.username ?? "" }
     });
 
     const onSubmit = (data) => {
-        setStatus(null);
         setPending(data); // hold form data, show password modal
     };
 
@@ -92,14 +92,14 @@ function UpdateUsername() {
         setLoading(false);
         setPending(null);
         // reset();
-        if (res.ok) setStatus({ type: "success", message: "Username updated successfully." });
-        else setStatus({ type: "error", message: res.error });
+        if (res.ok) 
+            addToast("Username updated successfully.", "success");
+        else 
+            addToast(res.error, "error");
     };
 
     const onDismiss = () => {
         setPending(null);
-        // reset({ newUsername: user?.username ?? "" });
-        setStatus(null);
     };
 
     return (
@@ -125,7 +125,6 @@ function UpdateUsername() {
                         )}
                     </div>
                     <SubmitButton label="UPDATE USERNAME" isSubmitting={false} color="var(--neon-violet)" />
-                    <StatusMessage status={status} />
                 </form>
             </SectionCard>
 
@@ -146,13 +145,12 @@ function UpdateUsername() {
 function UpdatePassword() {
     const { updatePassword } = useAuth();
     const [pending, setPending] = useState(null);
-    const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(false);
+    const { addToast } = useToast();
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
     const newPassword = watch("newPassword");
 
     const onSubmit = (data) => {
-        setStatus(null);
         setPending(data);
     };
 
@@ -165,14 +163,15 @@ function UpdatePassword() {
         setLoading(false);
         setPending(null);
         reset();
-        if (res.ok) setStatus({ type: "success", message: "Password updated successfully." });
-        else setStatus({ type: "error", message: res.error });
+        if (res.ok) 
+            addToast("Password updated successfully.", "success");
+        else 
+            addToast(res.error, "error");
     };
 
     const onDismiss = () => {
         setPending(null);
         reset();
-        setStatus(null);
     };
 
     return (
@@ -216,7 +215,6 @@ function UpdatePassword() {
                         )}
                     </div>
                     <SubmitButton label="UPDATE PASSWORD" isSubmitting={false} color="var(--neon-cyan)" />
-                    <StatusMessage status={status} />
                 </form>
             </SectionCard>
 
@@ -237,14 +235,13 @@ function UpdatePassword() {
 function UpdateEmail() {
     const { user, updateEmail } = useAuth();
     const [pending, setPending] = useState(null);
-    const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(false);
-    const { register, handleSubmit, reset, formState: { errors } } = useForm({
+    const { addToast } = useToast();
+    const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: { email: user?.email ?? "" }
     });
 
     const onSubmit = (data) => {
-        setStatus(null);
         setPending(data);
     };
 
@@ -254,14 +251,13 @@ function UpdateEmail() {
         setLoading(false);
         setPending(null);
         // reset({ email: user?.email ?? "" });
-        if (res.ok) setStatus({ type: "success", message: "Email updated successfully." });
-        else setStatus({ type: "error", message: res.error });
+        if (res.ok) addToast("Email updated successfully.", "success");
+        else addToast(res.error, "error");
     };
 
     const onDismiss = () => {
         setPending(null);
         // reset({ email: user?.email ?? "" });
-        setStatus(null);
     };
 
     return (
@@ -292,7 +288,6 @@ function UpdateEmail() {
                         )}
                     </div>
                     <SubmitButton label={user?.email ? "UPDATE EMAIL" : "ADD EMAIL"} isSubmitting={false} color="var(--neon-gold)" />
-                    <StatusMessage status={status} />
                 </form>
             </SectionCard>
 
@@ -315,21 +310,22 @@ function DeleteAccount() {
     const navigate = useNavigate();
     const [showConfirm, setShowConfirm] = useState(false);
     const [deleted, setDeleted] = useState(false);
-    const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(false);
+    const {addToast} = useToast();
 
     const onConfirm = async (password) => {
         setLoading(true);
         const res = await deleteAccount({ password });
         setLoading(false);
         setShowConfirm(false);
-        if (res.ok) setDeleted(true);
-        else setStatus({ type: "error", message: res.error });
+        if (res.ok) 
+            setDeleted(true);
+        else
+            addToast(res.error, 'error');
     };
 
     const onDismiss = () => {
         setShowConfirm(false);
-        setStatus(null);
     };
 
     if (deleted) {
@@ -382,7 +378,6 @@ function DeleteAccount() {
                     >
                         Delete My Account
                     </motion.button>
-                    <StatusMessage status={status} />
                 </div>
             </SectionCard>
 
@@ -426,7 +421,7 @@ export default function Profile() {
                             PROFILE
                         </h1>
                         <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-                            {user?.username} · {user?.spins} spins · {user?.email ?? "No email set"}
+                            {user?.username} · {user?.spins} spins · {user?.email ?? "----"}
                         </p>
                     </div>
                     <motion.button
@@ -452,7 +447,6 @@ export default function Profile() {
                 >
                     <UpdateUsername />
                     <UpdatePassword />
-                    <UpdateEmail />
                     <DeleteAccount />
                 </motion.div>
             </motion.div>

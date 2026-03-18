@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
-import { useNavigate } from "react-router-dom";
 import { adminApi, prizesApi } from "../utils/api";
 import { pageEnter } from "../utils/animations";
 import PageLayout from "../components/layout/PageLayout";
@@ -13,10 +12,9 @@ import { useToast } from "../context/ToastContext";
 const TABS = ["Overview", "Users", "Prizes"];
 
 export default function Admin() {
-  const navigate              = useNavigate();
   const [activeTab, setActiveTab] = useState("Overview");
-  const [users, setUsers]     = useState([]);
-  const [prizes, setPrizes]   = useState([]);
+  const [users, setUsers] = useState([]);
+  const [prizes, setPrizes] = useState([]);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
 
@@ -26,10 +24,10 @@ export default function Admin() {
       adminApi.users(),
       prizesApi.listAll(),
     ]);
-    if (usersRes.ok)  setUsers(usersRes.data.users);
-    else              addToast('Failed to load users.', 'error');
+    if (usersRes.ok) setUsers(usersRes.data.users);
+    else addToast('Failed to load users.', 'error');
     if (prizesRes.ok) setPrizes(prizesRes.data.prizes);
-    else              addToast('Failed to load prizes.', 'error');
+    else addToast('Failed to load prizes.', 'error');
     setLoading(false);
   }, []);
 
@@ -54,18 +52,6 @@ export default function Admin() {
             ADMIN PANEL
           </h1>
           <div className="flex gap-2">
-            <motion.button
-              onClick={() => navigate("/")}
-              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 rounded-xl text-sm font-semibold"
-              style={{
-                background: "rgba(0,245,255,0.08)",
-                border: "1px solid rgba(0,245,255,0.3)",
-                color: "var(--neon-cyan)",
-              }}
-            >
-              ← Game
-            </motion.button>
             <motion.button
               onClick={loadData}
               whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}

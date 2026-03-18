@@ -17,44 +17,37 @@ export const tokenStore = {
 
 // ── Core fetch wrapper ────────────────────────────────────────────────────────
 async function request(method, path, body = null, auth = true) {
-  const headers = { 'Content-Type': 'application/json' };
+    const headers = { 'Content-Type': 'application/json' };
 
-  if (auth) {
-    const token = tokenStore.get();
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const options = { method, headers };
-  if (body) options.body = JSON.stringify(body);
-
-  try {
-    const res = await fetch(`${BASE_URL}${path}`, options);
-    const json = await res.json().catch(() => ({}));
-
-    // Auto-logout on expired/invalid token
-    if (res.status === 401) {
-      tokenStore.clear();
-      window.location.href = '/';
-      return { ok: false, error: 'Session expired. Please log in again.', status: 401 };
+    if (auth) {
+        const token = tokenStore.get();
+        if (token) headers['Authorization'] = `Bearer ${token}`;
     }
 
-    if (!res.ok) {
-      return {
-        ok: false,
-        error: json.error ?? json.message ?? `Request failed (${res.status})`,
-        details: json.details ?? null,
-        status: res.status,
-      };
-    }
+    const options = { method, headers };
+    if (body) options.body = JSON.stringify(body);
 
-    return { ok: true, data: json };
-  } catch (err) {
-    return {
-      ok: false,
-      error: 'Network error — is the API server running?',
-      status: 0,
-    };
-  }
+    try {
+        const res = await fetch(`${BASE_URL}${path}`, options);
+        const json = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            return {
+                ok: false,
+                error: json.error ?? json.message ?? `Request failed (${res.status})`,
+                details: json.details ?? null,
+                status: res.status,
+            };
+        }
+
+        return { ok: true, data: json };
+    } catch (err) {
+        return {
+            ok: false,
+            error: 'Network error — is the API server running?',
+            status: 0,
+        };
+    }
 }
 
 // ── Convenience methods ───────────────────────────────────────────────────────
@@ -78,8 +71,7 @@ export const authApi = {
 // ── Users ─────────────────────────────────────────────────────────────────────
 export const usersApi = {
     me: () => get('/users/me'),
-    updateUsername: (username) => patch('/users/me/username', { username }),
-    updateEmail: (email) => patch('/users/me/email', { email }),
+    updateUsername: (username, password) => patch('/users/me/username', { username, password }),
     updatePassword: (current_password, new_password) =>
         patch('/users/me/password', { current_password, new_password }),
     deleteAccount: (password) => del('/users/me', { password }),

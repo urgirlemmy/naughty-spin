@@ -53,20 +53,14 @@ export function AuthProvider({ children }) {
     _setUser(prev => ({ ...prev, ...u }));
   }
 
-  async function updateUsername({ newUsername, password: _ }) {
-    const res = await usersApi.updateUsername(newUsername);
+  async function updateUsername({ newUsername, password }) {
+    const res = await usersApi.updateUsername(newUsername, password);
     if (res.ok) _setUser(res.data.user);
     return res;
   }
 
   async function updatePassword({ currentPassword, newPassword }) {
     return await usersApi.updatePassword(currentPassword, newPassword);
-  }
-
-  async function updateEmail({ email, password: _ }) {
-    const res = await usersApi.updateEmail(email);
-    if (res.ok) setUser({ email: res.data.email });
-    return res;
   }
 
   async function deleteAccount({ password }) {
@@ -90,7 +84,6 @@ export function AuthProvider({ children }) {
       register,
       updateUsername,
       updatePassword,
-      updateEmail,
       deleteAccount,
     }}>
       {children}
