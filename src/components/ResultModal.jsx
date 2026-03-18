@@ -6,8 +6,8 @@ export default function ResultModal({ prize, onClose }) {
     <AnimatePresence>
       {prize && (
         <motion.div
-        className="fixed inset-0 z-50 flex items-center justify-center p-6"
-        variants={fadeIn} initial="hidden" animate="visible" exit="exit"
+          className="fixed inset-0 z-50 flex items-center justify-center p-6"
+          variants={fadeIn} initial="hidden" animate="visible" exit="exit"
         >
           <div
             className="absolute inset-0 bg-black/70 backdrop-blur-md"
@@ -28,10 +28,18 @@ export default function ResultModal({ prize, onClose }) {
             />
 
             <h2
-              className="font-display tracking-widest text-3xl mb-5"
-              style={{ color: prize.id === "JACKPOT" ? "var(--neon-gold)" : "var(--text-primary)" }}
-            >
-              {prize.id === "JACKPOT" ? "🏆 JACKPOT!!" : "🎁 YOU WON"}
+              className="font-display text-3xl mb-5"
+              style={{
+                color: prize.code === "JACKPOT" ?
+                  "var(--neon-gold)" :
+                  prize.code === "TRYAGAIN" ?
+                    "var(--text-muted)" : "var(--neon-pink)"
+              }}>
+              {prize.code === "JACKPOT"
+                ? "💋 You Wicked Winner!!"
+                : prize.code === "TRYAGAIN"
+                  ? "😈 Not This Time, Darling"
+                  : "🎁 Oh, You Lucky Thing!"}
             </h2>
 
             <div className="flex items-center gap-4">
@@ -46,11 +54,11 @@ export default function ResultModal({ prize, onClose }) {
                   {prize.fullName}
                 </p>
                 <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-                  {prize.id === "TRYAGAIN"
-                    ? "Tough luck! Try again."
-                    : prize.id === "JACKPOT"
-                    ? "Legendary pull — admin owes you a trophy."
-                    : "Claim via the rewards panel."}
+                  {prize.code === "TRYAGAIN"
+                    ? "Not this time, darling. Try your luck again 😈"
+                    : prize.code === "JACKPOT"
+                      ? "You naughty winner — admin owes you something special 💋"
+                      : "Contact @Emmy to claim your little treat 🎀"}
                 </p>
               </div>
             </div>

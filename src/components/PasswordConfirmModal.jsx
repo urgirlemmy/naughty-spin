@@ -45,9 +45,9 @@ export default function PasswordConfirmModal({ onConfirm, onDismiss, loading }) 
           style={{ background: "linear-gradient(90deg, transparent, var(--neon-violet), transparent)" }}
         />
 
-        <h2 className="font-display tracking-widest text-2xl mb-1"
+        <h2 className="font-display text-2xl mb-1"
           style={{ color: "var(--text-primary)" }}>
-          CONFIRM IDENTITY
+          Confirm Identity
         </h2>
         <p className="text-sm mb-5" style={{ color: "var(--text-muted)" }}>
           Enter your password to continue.

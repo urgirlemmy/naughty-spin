@@ -14,12 +14,12 @@ export default function RewardList({ prizes, compact = false }) {
       <div className="space-y-2">
         {prizes.length === 0 ? (
           <p className="text-sm italic" style={{ color: "var(--text-muted)" }}>No prizes available.</p>
-        ) : prizes.map(({ id, fullName, emoji, rarity }) => {
+        ) : prizes.map(({ id, code, fullName, emoji, rarity }) => {
           const cfg = rarityConfig[rarity] ?? rarityConfig.common;
           return (
             <div key={id} className="flex justify-between items-center text-sm py-1"
               style={{ borderBottom: "1px solid rgba(157,78,221,0.1)" }}>
-              <span style={{ color: "var(--text-primary)" }}>{emoji} {id}</span>
+              <span style={{ color: "var(--text-primary)" }}>{emoji} {code}</span>
               <span style={{ color: cfg.color }}>{fullName}</span>
             </div>
           );
@@ -40,8 +40,8 @@ export default function RewardList({ prizes, compact = false }) {
       <div className="px-5 py-4 flex items-center justify-between"
         style={{ borderBottom: "1px solid rgba(0,245,255,0.15)" }}
       >
-        <h2 className="font-display tracking-widest text-xl" style={{ color: "var(--neon-cyan)" }}>
-          PRIZE POOL
+        <h2 className="font-display text-xl" style={{ color: "var(--neon-cyan)" }}>
+          Prize Pool
         </h2>
         <span className="text-xs px-2 py-1 rounded-lg"
           style={{ background: "rgba(0,245,255,0.08)", color: "var(--text-muted)" }}>

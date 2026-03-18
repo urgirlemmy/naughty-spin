@@ -27,29 +27,12 @@ function SectionCard({ title, accent = "var(--neon-violet)", children }) {
             }}
         >
             <div className="px-6 py-4" style={{ borderBottom: `1px solid ${accent}22` }}>
-                <h2 className="font-display tracking-widest text-lg" style={{ color: accent }}>
+                <h2 className="font-display text-lg" style={{ color: accent }}>
                     {title}
                 </h2>
             </div>
             <div className="px-6 py-5">{children}</div>
         </motion.div>
-    );
-}
-
-function StatusMessage({ status }) {
-    if (!status) return null;
-    return (
-        <AnimatePresence>
-            <motion.p
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="text-sm mt-3"
-                style={{ color: status.type === "error" ? "#ff6b6b" : "var(--neon-cyan)" }}
-            >
-                {status.type === "error" ? "✕ " : "✓ "}{status.message}
-            </motion.p>
-        </AnimatePresence>
     );
 }
 
@@ -59,7 +42,7 @@ function SubmitButton({ label, isSubmitting, color }) {
             type="submit"
             disabled={isSubmitting}
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="w-fit px-5 py-2 rounded-xl font-display tracking-widest text-sm disabled:opacity-40 mt-1"
+            className="w-fit px-5 py-2 rounded-xl font-display text-sm disabled:opacity-40 mt-1"
             style={{
                 background: `${color}18`,
                 border: `1px solid ${color}55`,
@@ -411,14 +394,14 @@ export default function Profile() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1
-                            className="font-display tracking-widest text-5xl"
+                            className="font-display text-5xl"
                             style={{
                                 background: "linear-gradient(90deg, #9D4EDD, #00F5FF)",
                                 WebkitBackgroundClip: "text",
                                 WebkitTextFillColor: "transparent",
                             }}
                         >
-                            PROFILE
+                            Your Secrets 💋
                         </h1>
                         <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
                             {user?.username} · {user?.spins} spins · {user?.email ?? "----"}

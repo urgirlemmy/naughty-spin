@@ -36,16 +36,19 @@ export default function PageLayout({ children }) {
       >
         {/* Brand */}
         <div className="flex items-center gap-3">
-          <span className="text-3xl" style={{ filter: "drop-shadow(0 0 8px rgba(157,78,221,0.8))" }}>🎡</span>
+          <span className="text-3xl" style={{ filter: "drop-shadow(0 0 8px rgba(255,110,180,0.8))" }}>
+            ✨
+          </span>
           <span
-            className="font-display tracking-widest text-3xl"
+            className="font-display text-3xl"
             style={{
-              background: "linear-gradient(90deg, #9D4EDD, #00F5FF)",
+              background: "linear-gradient(90deg, #FF6EB4, #9D4EDD, #00F5FF)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
+              filter: "drop-shadow(0 0 8px rgba(255,110,180,0.3))",
             }}
           >
-            NAUGHTY SPIN
+            Wicked Reels
           </span>
         </div>
 
@@ -66,7 +69,7 @@ export default function PageLayout({ children }) {
                 <span style={{ color: "var(--neon-cyan)" }}>●</span>
                 {user.username}
                 <span style={{ color: "var(--neon-gold)", fontSize: "0.75rem" }}>
-                  {user.spins} spins
+                  {user.spins} 🎡
                 </span>
               </button>
 

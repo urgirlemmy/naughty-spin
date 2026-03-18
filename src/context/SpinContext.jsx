@@ -23,6 +23,7 @@ export function SpinProvider({ children }) {
 
   const [prizes, setPrizes] = useState([]);
   const [loadingPrizes, setLoadingPrizes] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const [spinning, setSpinning] = useState(false);
   const [strips, setStrips] = useState([]);
   const [stopped, setStopped] = useState(Array(NUM_REELS).fill(true));
@@ -58,6 +59,25 @@ export function SpinProvider({ children }) {
       addToast('Failed to load prizes.', 'error');
     }
     setLoadingPrizes(false);
+  }, []);
+
+  const loadHistory = useCallback(async () => {
+    setLoadingHistory(true);
+    const res = await spinsApi.history(50, 0);
+    if (res.ok) {
+      const normalised = res.data.spins
+        .filter(s => s.prizes.code !== 'TRYAGAIN')
+        .map(s => ({
+          time: new Date(s.spun_at).toLocaleTimeString(),
+          id: s.prizes.id,
+          code: s.prizes.code,
+          fullName: s.prizes.full_name,
+          emoji: s.prizes.emoji,
+          rarity: s.prizes.rarity,
+        }));
+      setPreviousWins(normalised);
+    }
+    setLoadingHistory(false);
   }, []);
 
   const shootConfetti = useCallback((isJackpot) => {
@@ -137,6 +157,7 @@ export function SpinProvider({ children }) {
 
   return (
     <SpinContext.Provider value={{
+      loadingHistory, loadHistory,
       prizes, loadingPrizes, loadPrizes,
       strips, stopped, paylineActive,
       NUM_REELS, SYMBOLS_PER_REEL,

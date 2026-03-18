@@ -7,6 +7,7 @@ import RewardList from "./RewardList";
 
 import ResultModal from "./ResultModal";
 import LoginModal from "./LoginModal";
+import Loader from "./Loader";
 
 const REEL_SYMBOL_HEIGHT = 88;
 
@@ -14,6 +15,7 @@ export default function SlotMachine() {
     const { isLoggedIn, user } = useAuth();
     const {
         prizes, loadingPrizes, loadPrizes,
+        loadHistory,
         strips, stopped, paylineActive,
         spinning, spin,
         prize, showResult, setShowResult,
@@ -30,6 +32,11 @@ export default function SlotMachine() {
     // Load prizes on mount
     useEffect(() => { loadPrizes(); }, [loadPrizes]);
 
+    // Load history on mount — only when logged in
+    useEffect(() => {
+        if (isLoggedIn) loadHistory();
+    }, [isLoggedIn, loadHistory]);
+
     // Click outside to close panels
     useEffect(() => {
         function handleClickOutside(e) {
@@ -41,57 +48,81 @@ export default function SlotMachine() {
     }, [showLegend, showPreviousWins]);
 
     if (loadingPrizes) {
-        return (
-            <div className="flex flex-col items-center mt-20 gap-4" style={{ color: "var(--text-muted)" }}>
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                    className="text-5xl"
-                    style={{ filter: "drop-shadow(0 0 12px rgba(157,78,221,0.8))" }}
-                >🎰</motion.div>
-                <p className="font-display tracking-widest text-lg">LOADING PRIZES</p>
-            </div>
-        );
+        return <Loader />
     }
 
     return (
         <div className="flex flex-col items-center gap-8 mt-6 w-full max-w-lg">
 
             {/* Title */}
+            {/* Title — floats down with shimmer */}
             <motion.div
                 className="text-center"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                initial={{ opacity: 0, y: -40, filter: "blur(8px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
             >
+                {/* Sparkles above title */}
+                <motion.div
+                    className="flex justify-center gap-3 mb-2 text-lg"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                    {["✨", "🌸", "✨"].map((s, i) => (
+                        <motion.span
+                            key={i}
+                            animate={{ y: [0, -6, 0] }}
+                            transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                delay: i * 0.3,
+                                ease: "easeInOut",
+                            }}
+                        >
+                            {s}
+                        </motion.span>
+                    ))}
+                </motion.div>
+
                 <h1
-                    className="font-display tracking-widest text-6xl"
+                    className="font-display text-6xl"
                     style={{
-                        background: "linear-gradient(90deg, #9D4EDD, #00F5FF, #FFD700)",
+                        background: "linear-gradient(90deg, #FF6EB4, #9D4EDD, #00F5FF, #FF6EB4)",
+                        backgroundSize: "200% auto",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
-                        filter: "drop-shadow(0 0 20px rgba(157,78,221,0.4))",
+                        filter: "drop-shadow(0 0 20px rgba(255,110,180,0.4))",
+                        animation: "shimmer 4s linear infinite",
                     }}
                 >
-                    SLOT MACHINE
+                    Spin, Darling!
                 </h1>
+
                 {isLoggedIn && (
-                    <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
-                        <span style={{ color: "var(--neon-gold)" }}>{user.spins}</span> spin{user.spins !== 1 ? "s" : ""} remaining
-                    </p>
+                    <motion.p
+                        className="mt-2 text-sm"
+                        style={{ color: "var(--text-muted)" }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.6 }}
+                    >
+                        <span style={{ color: "var(--neon-pink)" }}>{user.spins}</span>
+                        {" "}spin{user.spins !== 1 ? "s" : ""} remaining
+                    </motion.p>
                 )}
             </motion.div>
 
             {/* Machine body */}
             <motion.div
                 className="w-full rounded-3xl p-6 relative"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                initial={{ opacity: 0, y: 60, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.7, delay: 0.4, type: "spring", stiffness: 120, damping: 18 }}
                 style={{
                     background: "linear-gradient(160deg, #0f0f1f, #0a0a16)",
-                    border: "1px solid rgba(157,78,221,0.3)",
-                    boxShadow: "0 0 60px rgba(157,78,221,0.15), 0 0 0 1px rgba(0,245,255,0.05) inset, 0 24px 64px rgba(0,0,0,0.6)",
+                    border: "1px solid rgba(255,110,180,0.2)",
+                    boxShadow: "0 0 60px rgba(255,110,180,0.08), 0 0 0 1px rgba(157,78,221,0.05) inset, 0 24px 64px rgba(0,0,0,0.6)",
                 }}
             >
                 <div className="absolute top-0 left-8 right-8 h-px"
@@ -108,9 +139,9 @@ export default function SlotMachine() {
                                 style={{
                                     top: REEL_SYMBOL_HEIGHT,
                                     height: REEL_SYMBOL_HEIGHT,
-                                    border: "1px solid rgba(255,215,0,0.8)",
-                                    background: "rgba(255,215,0,0.07)",
-                                    boxShadow: "0 0 24px 6px rgba(255,215,0,0.3), inset 0 0 20px rgba(255,215,0,0.05)",
+                                    border: "1px solid rgba(255,110,180,0.8)",
+                                    background: "rgba(255,110,180,0.07)",
+                                    boxShadow: "0 0 24px 6px rgba(255,110,180,0.3), inset 0 0 20px rgba(255,110,180,0.05)",
                                 }}
                             />
                         )}
@@ -137,29 +168,29 @@ export default function SlotMachine() {
                         disabled={spinning || !user?.spins}
                         whileHover={!spinning && user?.spins ? { scale: 1.03 } : {}}
                         whileTap={!spinning && user?.spins ? { scale: 0.97 } : {}}
-                        className="w-full py-4 rounded-xl font-display tracking-widest text-xl transition-all disabled:opacity-40"
+                        className="w-full py-4 rounded-xl font-display text-xl transition-all disabled:opacity-40"
                         style={{
-                            background: spinning ? "rgba(157,78,221,0.2)" : "linear-gradient(135deg, #9D4EDD, #6B21A8)",
-                            border: "1px solid rgba(157,78,221,0.6)",
+                            background: spinning ? "rgba(157,78,221,0.2)" : "linear-gradient(135deg, #FF6EB4, #9D4EDD)",
+                            border: "1px solid rgba(255,110,180,0.6)",
                             color: "#fff",
-                            boxShadow: spinning ? "none" : "0 0 24px rgba(157,78,221,0.5), 0 4px 16px rgba(0,0,0,0.4)",
+                            boxShadow: spinning ? "none" : "0 0 24px rgba(255,110,180,0.5), 0 4px 16px rgba(0,0,0,0.4)",
                         }}
                     >
                         {spinning ? (
-                            <span style={{ color: "var(--text-muted)" }}>SPINNING…</span>
+                            <span style={{ color: "var(--text-muted)" }}>Spinning…</span>
                         ) : user?.spins ? (
                             <span style={{ background: "linear-gradient(90deg, #fff, #00F5FF)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                                SPIN
+                                Spin
                             </span>
                         ) : (
-                            <span style={{ color: "var(--text-muted)" }}>NO SPINS LEFT</span>
+                            <span style={{ color: "var(--text-muted)" }}>All out 🥀</span>
                         )}
                     </motion.button>
                 ) : (
                     <motion.button
                         onClick={() => setShowLoginModal(true)}
                         whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                        className="w-full py-4 rounded-xl font-display tracking-widest text-xl"
+                        className="w-full py-4 rounded-xl font-display text-xl"
                         style={{
                             background: "rgba(0,245,255,0.08)",
                             border: "1px solid rgba(0,245,255,0.3)",
@@ -167,7 +198,7 @@ export default function SlotMachine() {
                             boxShadow: "0 0 18px rgba(0,245,255,0.1)",
                         }}
                     >
-                        LOGIN TO PLAY
+                        Login to Play 💋
                     </motion.button>
                 )}
             </motion.div>
@@ -188,7 +219,7 @@ export default function SlotMachine() {
                 }}
             >
                 <span>⛳</span>
-                <span className="font-display tracking-widest text-xs">LEGEND</span>
+                <span className="font-display text-xs">Legend</span>
             </motion.button>
 
             {/* Previous Wins button — fixed bottom left, only when logged in */}
@@ -209,7 +240,7 @@ export default function SlotMachine() {
                 >
                     <span>🎖️</span>
                     <div className="flex flex-col items-start leading-tight">
-                        <span className="font-display tracking-widest text-xs">WINS</span>
+                        <span className="font-display text-xs">Wins</span>
                         {previousWins.length > 0 && (
                             <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
                                 {previousWins.length} total
@@ -239,8 +270,8 @@ export default function SlotMachine() {
                             backdropFilter: "blur(16px)",
                         }}
                     >
-                        <h2 className="font-display tracking-widest text-lg mb-3" style={{ color: "var(--neon-violet)" }}>
-                            PRIZE LEGEND
+                        <h2 className="font-display text-lg mb-3" style={{ color: "var(--neon-violet)" }}>
+                            Prize Legend
                         </h2>
                         <RewardList prizes={prizes} compact />
                     </motion.div>
@@ -263,12 +294,14 @@ export default function SlotMachine() {
                             backdropFilter: "blur(16px)",
                         }}
                     >
-                        <h2 className="font-display tracking-widest text-lg mb-3" style={{ color: "var(--neon-cyan)" }}>
-                            YOUR WINS
+                        <h2 className="font-display text-lg mb-3" style={{ color: "var(--neon-cyan)" }}>
+                            Your Wins
                         </h2>
                         <div className="overflow-y-auto flex-1 space-y-2 pr-1">
                             {previousWins.length === 0 ? (
-                                <p className="text-sm italic" style={{ color: "var(--text-muted)" }}>No wins yet… spin king 👑</p>
+                                <p className="text-sm italic" style={{ color: "var(--text-muted)" }}>
+                                    No wins yet, darling… spin your luck 😈
+                                </p>
                             ) : previousWins.map((w, i) => (
                                 <div key={i} className="rounded-xl p-2 text-sm"
                                     style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(157,78,221,0.15)" }}>

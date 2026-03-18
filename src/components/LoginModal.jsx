@@ -35,9 +35,9 @@ export default function LoginModal({ onFinish }) {
           style={{ background: "linear-gradient(90deg, transparent, var(--neon-violet), transparent)" }}
         />
 
-        <h2 className="font-display tracking-widest text-2xl mb-4"
+        <h2 className="font-display text-2xl mb-4"
           style={{ color: "var(--text-primary)" }}>
-          {tab === "login" ? "WELCOME BACK 👋" : "CREATE ACCOUNT 🎉"}
+          {tab === "login" ? "Welcome Back, Darling 💋" : "Join the Fun 🌸"}
         </h2>
 
         {/* Tabs */}
@@ -83,7 +83,7 @@ function LoginForm({ onFinish }) {
   const onSubmit = async (data) => {
     const res = await login(data);
     if (res.ok) {
-      addToast(`Welcome back, ${res.data?.user?.username ?? data.username}! 🎰`, 'success');
+      addToast(`Welcome back, ${res.data?.user?.username ?? data.username}! 💋`, 'success');
       onFinish();
     } else {
       addToast(res.error, 'error');
@@ -134,7 +134,7 @@ function RegisterForm({ onFinish }) {
   const onSubmit = async (data) => {
     const res = await registerUser({ username: data.username, password: data.password });
     if (res.ok) {
-      addToast(`Account created! Welcome, ${data.username} 🎉`, 'success');
+      addToast(`Welcome to Wicked Reels, ${data.username} 🌸`, 'success');
       onFinish();
     } else {
       addToast(res.error, 'error');

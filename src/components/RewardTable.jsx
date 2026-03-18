@@ -64,8 +64,8 @@ export default function RewardTable({ prizes, onPrizesChange }) {
       <div className="px-5 py-4 flex items-center justify-between"
         style={{ borderBottom: "1px solid rgba(255,215,0,0.15)" }}
       >
-        <h2 className="font-display tracking-widest text-xl" style={{ color: "var(--neon-gold)" }}>
-          PRIZE MANAGER
+        <h2 className="font-display text-xl" style={{ color: "var(--neon-gold)" }}>
+          Prize Manager
         </h2>
         <motion.button
           onClick={() => setShowAddForm(s => !s)}
@@ -180,7 +180,7 @@ export default function RewardTable({ prizes, onPrizesChange }) {
                 <motion.button
                   type="submit" disabled={loading}
                   whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                  className="w-full py-2 rounded-lg font-display tracking-widest text-sm disabled:opacity-40"
+                  className="w-full py-2 rounded-lg font-display text-sm disabled:opacity-40"
                   style={{
                     background: "linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1))",
                     border: "1px solid rgba(255,215,0,0.4)",

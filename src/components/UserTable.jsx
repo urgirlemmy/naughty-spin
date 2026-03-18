@@ -38,8 +38,8 @@ export default function UserTable({ users, onUsersChange }) {
       <div className="px-5 py-4 flex items-center justify-between"
         style={{ borderBottom: "1px solid rgba(157,78,221,0.2)" }}
       >
-        <h2 className="font-display tracking-widest text-xl" style={{ color: "var(--neon-violet)" }}>
-          USERS
+        <h2 className="font-display text-xl" style={{ color: "var(--neon-violet)" }}>
+          Users
         </h2>
         <span className="text-xs px-2 py-1 rounded-lg"
           style={{ background: "rgba(157,78,221,0.15)", color: "var(--text-muted)" }}>

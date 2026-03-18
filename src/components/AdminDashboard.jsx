@@ -13,7 +13,7 @@ function StatCard({ emoji, label, value, color }) {
       }}
     >
       <span className="text-2xl">{emoji}</span>
-      <span className="font-display tracking-widest text-3xl" style={{ color }}>
+      <span className="font-display text-3xl" style={{ color }}>
         {value}
       </span>
       <span className="text-xs tracking-widest uppercase" style={{ color: "var(--text-muted)" }}>
@@ -52,9 +52,9 @@ export default function AdminDashboard({ users, prizes }) {
       <div className="px-5 py-4"
         style={{ borderBottom: "1px solid rgba(157,78,221,0.2)" }}
       >
-        <h2 className="font-display tracking-widest text-xl"
+        <h2 className="font-display text-xl"
           style={{ color: "var(--neon-violet)" }}>
-          OVERVIEW
+          Overview
         </h2>
       </div>
 

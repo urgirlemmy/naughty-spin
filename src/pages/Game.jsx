@@ -4,6 +4,7 @@ import { useAuth } from "../providers/AuthProvider";
 import PageLayout from "../components/layout/PageLayout";
 import SlotMachine from "../components/SlotMachine";
 import { SpinProvider } from "../context/SpinContext";
+import Footer from "../components/Footer";
 
 export default function Game() {
   const { isLoggedIn, user, loading } = useAuth();
@@ -22,6 +23,7 @@ export default function Game() {
     <SpinProvider>
       <PageLayout>
         <SlotMachine />
+        <Footer />
       </PageLayout>
     </SpinProvider>
   );

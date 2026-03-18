@@ -8,6 +8,7 @@ import UserTable from "../components/UserTable";
 import RewardList from "../components/RewardList";
 import RewardTable from "../components/RewardTable";
 import { useToast } from "../context/ToastContext";
+import Loader from "../components/Loader";
 
 const TABS = ["Overview", "Users", "Prizes"];
 
@@ -42,14 +43,14 @@ export default function Admin() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1
-            className="font-display tracking-widest text-5xl"
+            className="font-display text-5xl"
             style={{
               background: "linear-gradient(90deg, #9D4EDD, #00F5FF)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
           >
-            ADMIN PANEL
+            The Vault ⚙️
           </h1>
           <div className="flex gap-2">
             <motion.button
@@ -90,14 +91,7 @@ export default function Admin() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-              className="text-4xl"
-              style={{ filter: "drop-shadow(0 0 12px rgba(157,78,221,0.8))" }}
-            >⚙️</motion.div>
-          </div>
+          <Loader message="Loading admin data…" />
         ) : (
           <>
             {activeTab === "Overview" && (
