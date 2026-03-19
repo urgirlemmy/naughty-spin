@@ -67,6 +67,8 @@ export const authApi = {
     logout: () =>
         post('/auth/logout'),
     forgotPassword: (username) => post('/auth/forgot-password', { username }, false),
+    resetPassword: (access_token, refresh_token, new_password) =>
+        post('/auth/reset-password', { access_token, refresh_token, new_password }, false),
 };
 
 // ── Users ─────────────────────────────────────────────────────────────────────
