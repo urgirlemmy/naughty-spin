@@ -9,26 +9,31 @@ import RewardList from "../components/RewardList";
 import RewardTable from "../components/RewardTable";
 import { useToast } from "../context/ToastContext";
 import Loader from "../components/Loader";
+import ClaimsTable from "../components/ClaimsTable";
 
-const TABS = ["Overview", "Users", "Prizes"];
+const TABS = ["Overview", "Users", "Prizes", "Claims"];
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("Overview");
   const [users, setUsers] = useState([]);
   const [prizes, setPrizes] = useState([]);
+  const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const [usersRes, prizesRes] = await Promise.all([
+    const [usersRes, prizesRes, claimsRes] = await Promise.all([
       adminApi.users(),
       prizesApi.listAll(),
+      adminApi.claims(),
     ]);
     if (usersRes.ok) setUsers(usersRes.data.users);
     else addToast('Failed to load users.', 'error');
     if (prizesRes.ok) setPrizes(prizesRes.data.prizes);
     else addToast('Failed to load prizes.', 'error');
+    if (claimsRes.ok) setClaims(claimsRes.data.claims);
+    else addToast('Failed to load claims.', 'error');
     setLoading(false);
   }, []);
 
@@ -98,7 +103,7 @@ export default function Admin() {
               <motion.div key="overview" variants={pageEnter} initial="hidden" animate="visible"
                 className="flex flex-col gap-6"
               >
-                <AdminDashboard users={users} prizes={prizes} />
+                <AdminDashboard users={users} prizes={prizes} claims={claims} />
                 <div className="grid grid-cols-2 gap-6">
                   <RewardList prizes={prizes} />
                   <UserTable users={users} onUsersChange={loadData} />
@@ -116,6 +121,12 @@ export default function Admin() {
               >
                 <RewardTable prizes={prizes} onPrizesChange={loadData} />
                 <RewardList prizes={prizes} />
+              </motion.div>
+            )}
+            {/* Add Claims tab content alongside the others: */}
+            {activeTab === "Claims" && (
+              <motion.div key="claims" variants={pageEnter} initial="hidden" animate="visible">
+                <ClaimsTable claims={claims} onClaimsChange={loadData} />
               </motion.div>
             )}
           </>

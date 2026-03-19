@@ -305,8 +305,30 @@ export default function SlotMachine() {
                             ) : previousWins.map((w, i) => (
                                 <div key={i} className="rounded-xl p-2 text-sm"
                                     style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(157,78,221,0.15)" }}>
-                                    <p className="font-semibold" style={{ color: "var(--text-primary)" }}>{w.emoji} {w.fullName}</p>
-                                    <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>{w.time}</p>
+                                    <p className="font-semibold" style={{ color: "var(--text-primary)" }}>
+                                        {w.emoji} {w.fullName}
+                                    </p>
+                                    <div className="flex items-center justify-between mt-1">
+                                        <p className="text-xs" style={{ color: "var(--text-muted)" }}>{w.time}</p>
+                                        {w.status && (
+                                            <span
+                                                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                                style={{
+                                                    background: w.status === 'claimed'
+                                                        ? "rgba(0,245,255,0.1)"
+                                                        : "rgba(255,110,180,0.1)",
+                                                    color: w.status === 'claimed'
+                                                        ? "var(--neon-cyan)"
+                                                        : "var(--neon-pink)",
+                                                    border: `1px solid ${w.status === 'claimed'
+                                                        ? "rgba(0,245,255,0.3)"
+                                                        : "rgba(255,110,180,0.3)"}`,
+                                                }}
+                                            >
+                                                {w.status === 'claimed' ? '✓ Claimed' : '🎀 Unclaimed'}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
                         </div>

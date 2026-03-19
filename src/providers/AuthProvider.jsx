@@ -59,6 +59,12 @@ export function AuthProvider({ children }) {
     return res;
   }
 
+  async function updateEmail({ email, password }) {
+  const res = await usersApi.updateEmail(email, password);
+  if (res.ok) _setUser(res.data.user);
+  return res;
+}
+
   async function updatePassword({ currentPassword, newPassword }) {
     return await usersApi.updatePassword(currentPassword, newPassword);
   }
@@ -83,6 +89,7 @@ export function AuthProvider({ children }) {
       logout,
       register,
       updateUsername,
+      updateEmail,
       updatePassword,
       deleteAccount,
     }}>

@@ -23,13 +23,14 @@ function StatCard({ emoji, label, value, color }) {
   );
 }
 
-export default function AdminDashboard({ users, prizes }) {
+export default function AdminDashboard({ users, prizes, claims }) {
   const totalUsers   = users.length;
   const totalSpins   = users.reduce((sum, u) => sum + u.spins, 0);
   const totalPrizes  = prizes.length;
   const adminCount   = users.filter(u => u.is_admin).length;
   const legendary    = prizes.filter(p => p.rarity === "legendary").length;
   const uncommon     = prizes.filter(p => p.rarity === "uncommon").length;
+  const unclaimed    = claims.filter(c => c.status === 'unclaimed').length;
 
   const stats = [
     { emoji: "👥", label: "Total Users",       value: totalUsers,  color: "var(--neon-violet)" },
@@ -38,6 +39,7 @@ export default function AdminDashboard({ users, prizes }) {
     { emoji: "👑", label: "Admins",            value: adminCount,  color: "var(--neon-violet)" },
     { emoji: "🏆", label: "Legendary Prizes",  value: legendary,   color: "var(--neon-gold)"   },
     { emoji: "⚡", label: "Uncommon Prizes",   value: uncommon,    color: "var(--neon-cyan)"   },
+    { emoji: "🎀", label: "Unclaimed Prizes", value: unclaimed, color: "var(--neon-pink)" },
   ];
 
   return (
