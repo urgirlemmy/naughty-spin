@@ -62,22 +62,35 @@ export function SpinProvider({ children }) {
   }, []);
 
   const loadHistory = useCallback(async () => {
-    setLoadingHistory(true);
-    const res = await spinsApi.history(50, 0);
-    if (res.ok) {
-      const normalised = res.data.spins
+    const [historyRes, claimsRes] = await Promise.all([
+      spinsApi.history(50, 0),
+      spinsApi.claims(50, 0),
+    ]);
+
+    if (historyRes.ok) {
+      // Build a map of spin_id → claim status
+      const claimMap = {};
+      if (claimsRes.ok) {
+        claimsRes.data.claims.forEach(c => {
+          claimMap[c.spin_id] = c.status;
+        });
+      }
+
+      const normalised = historyRes.data.spins
         .filter(s => s.prizes.code !== 'TRYAGAIN')
         .map(s => ({
+          spin_id: s.id,
           time: new Date(s.spun_at).toLocaleTimeString(),
           id: s.prizes.id,
           code: s.prizes.code,
           fullName: s.prizes.full_name,
           emoji: s.prizes.emoji,
           rarity: s.prizes.rarity,
+          status: claimMap[s.id] ?? null, // 'unclaimed' | 'claimed' | null
         }));
+
       setPreviousWins(normalised);
     }
-    setLoadingHistory(false);
   }, []);
 
   const shootConfetti = useCallback((isJackpot) => {
