@@ -5,6 +5,11 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Tell secrets scanner these are intentionally public VITE vars
+[secrets_scanning]
+  enabled = true
+  omit_keys = ["VITE_SUPABASE_ANON_KEY", "VITE_SUPABASE_URL"]
+
 [[headers]]
   for = "*.js"
   [headers.values]

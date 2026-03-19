@@ -19,7 +19,7 @@ export default function UserTable({ users, onUsersChange }) {
       setSuccessId(userId);
       setGivingSpins(prev => ({ ...prev, [userId]: "" }));
       setTimeout(() => setSuccessId(null), 1500);
-      addToast(`Gave ${amount} spin${amount > 1 ? 's' : ''}}!`, 'success');
+      addToast(`Gave ${amount} spin${amount > 1 ? 's' : ''}!`, 'success');
       onUsersChange();
     } else {
       addToast(res.error, 'error');
