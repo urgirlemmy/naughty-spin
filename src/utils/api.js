@@ -66,6 +66,7 @@ export const authApi = {
 
     logout: () =>
         post('/auth/logout'),
+    forgotPassword: (username) => post('/auth/forgot-password', { username }, false),
 };
 
 // ── Users ─────────────────────────────────────────────────────────────────────
@@ -75,6 +76,7 @@ export const usersApi = {
     updatePassword: (current_password, new_password) =>
         patch('/users/me/password', { current_password, new_password }),
     deleteAccount: (password) => del('/users/me', { password }),
+    updateEmail: (email, password) => patch('/users/me/email', { email, password }),
 };
 
 // ── Prizes ────────────────────────────────────────────────────────────────────

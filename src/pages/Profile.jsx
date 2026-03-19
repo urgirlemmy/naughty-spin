@@ -404,7 +404,7 @@ export default function Profile() {
                             Your Secrets 💋
                         </h1>
                         <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-                            {user?.username} · {user?.spins} spins · {user?.email ?? "----"}
+                            {user?.username} · {user?.spins} spins
                         </p>
                     </div>
                     <motion.button
@@ -429,6 +429,7 @@ export default function Profile() {
                     className="flex flex-col gap-4"
                 >
                     <UpdateUsername />
+                    <UpdateEmail />
                     <UpdatePassword />
                     <DeleteAccount />
                 </motion.div>
